@@ -1,7 +1,7 @@
 import os
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler, Filters, CallbackContext
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 
 # Bot configuration
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
@@ -14,7 +14,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-def start(update: Update, context: CallbackContext):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [InlineKeyboardButton("📋 Menu", callback_data='menu')],
         [InlineKeyboardButton("ℹ️ About Us", callback_data='about')],
@@ -32,11 +32,11 @@ def start(update: Update, context: CallbackContext):
 
 Choose an option from the menu below to get started.
     """
-    update.message.reply_text(welcome_text, reply_markup=reply_markup, parse_mode='Markdown')
+    await update.message.reply_text(welcome_text, reply_markup=reply_markup, parse_mode='Markdown')
 
-def menu(update: Update, context: CallbackContext):
+async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    query.answer()
+    await query.answer()
     
     keyboard = [
         [InlineKeyboardButton("📋 Menu", callback_data='menu')],
@@ -50,15 +50,15 @@ def menu(update: Update, context: CallbackContext):
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    query.edit_message_text(
+    await query.edit_message_text(
         "🎯 **Main Menu**\n\nSelect an option:",
         reply_markup=reply_markup,
         parse_mode='Markdown'
     )
 
-def about_us(update: Update, context: CallbackContext):
+async def about_us(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    query.answer()
+    await query.answer()
     
     about_text = """
 🏢 **About Us**
@@ -74,11 +74,11 @@ We've been serving customers since 2023 with 100% satisfaction rate.
     keyboard = [[InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    query.edit_message_text(about_text, reply_markup=reply_markup, parse_mode='Markdown')
+    await query.edit_message_text(about_text, reply_markup=reply_markup, parse_mode='Markdown')
 
-def vip_channels(update: Update, context: CallbackContext):
+async def vip_channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    query.answer()
+    await query.answer()
     
     vip_text = """
 💎 **VIP Channel List & Pricing**
@@ -109,11 +109,11 @@ def vip_channels(update: Update, context: CallbackContext):
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    query.edit_message_text(vip_text, reply_markup=reply_markup, parse_mode='Markdown')
+    await query.edit_message_text(vip_text, reply_markup=reply_markup, parse_mode='Markdown')
 
-def payment_methods(update: Update, context: CallbackContext):
+async def payment_methods(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    query.answer()
+    await query.answer()
     
     payment_text = """
 💳 **Payment Methods**
@@ -135,11 +135,11 @@ After payment, please send screenshot as proof.
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    query.edit_message_text(payment_text, reply_markup=reply_markup, parse_mode='Markdown')
+    await query.edit_message_text(payment_text, reply_markup=reply_markup, parse_mode='Markdown')
 
-def payment_proof(update: Update, context: CallbackContext):
+async def payment_proof(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    query.answer()
+    await query.answer()
     
     proof_text = """
 📸 **Send Payment Proof**
@@ -157,11 +157,11 @@ After verification, you'll be added to VIP channels.
     keyboard = [[InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    query.edit_message_text(proof_text, reply_markup=reply_markup, parse_mode='Markdown')
+    await query.edit_message_text(proof_text, reply_markup=reply_markup, parse_mode='Markdown')
 
-def social_media(update: Update, context: CallbackContext):
+async def social_media(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    query.answer()
+    await query.answer()
     
     social_text = """
 📱 **Follow Us on Social Media**
@@ -177,11 +177,11 @@ Follow us for updates and announcements!
     keyboard = [[InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    query.edit_message_text(social_text, reply_markup=reply_markup, parse_mode='Markdown')
+    await query.edit_message_text(social_text, reply_markup=reply_markup, parse_mode='Markdown')
 
-def talk_admin(update: Update, context: CallbackContext):
+async def talk_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    query.answer()
+    await query.answer()
     
     admin_text = """
 👨‍💼 **Talk with Admin**
@@ -200,11 +200,11 @@ We typically respond within 2-4 hours.
     keyboard = [[InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    query.edit_message_text(admin_text, reply_markup=reply_markup, parse_mode='Markdown')
+    await query.edit_message_text(admin_text, reply_markup=reply_markup, parse_mode='Markdown')
 
-def help_command(update: Update, context: CallbackContext):
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    query.answer()
+    await query.answer()
     
     help_text = """
 ❓ **Help Center**
@@ -228,40 +228,42 @@ For immediate assistance, contact @AdminUsername
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    query.edit_message_text(help_text, reply_markup=reply_markup, parse_mode='Markdown')
+    await query.edit_message_text(help_text, reply_markup=reply_markup, parse_mode='Markdown')
 
-def handle_photo(update: Update, context: CallbackContext):
+async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle payment proof photos"""
     user = update.message.from_user
     
-    update.message.reply_text(
+    await update.message.reply_text(
         "✅ Thank you! We've received your payment proof. We'll verify it within 24 hours.",
         parse_mode='Markdown'
     )
 
 def main():
-    # Create updater and dispatcher
-    updater = Updater(BOT_TOKEN)
-    dispatcher = updater.dispatcher
+    try:
+        # Create application
+        application = Application.builder().token(BOT_TOKEN).build()
 
-    # Add handlers
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CallbackQueryHandler(menu, pattern='menu'))
-    dispatcher.add_handler(CallbackQueryHandler(about_us, pattern='about'))
-    dispatcher.add_handler(CallbackQueryHandler(vip_channels, pattern='vip'))
-    dispatcher.add_handler(CallbackQueryHandler(payment_methods, pattern='payment'))
-    dispatcher.add_handler(CallbackQueryHandler(payment_proof, pattern='proof'))
-    dispatcher.add_handler(CallbackQueryHandler(social_media, pattern='social'))
-    dispatcher.add_handler(CallbackQueryHandler(talk_admin, pattern='admin'))
-    dispatcher.add_handler(CallbackQueryHandler(help_command, pattern='help'))
-    dispatcher.add_handler(MessageHandler(Filters.photo, handle_photo))
+        # Add handlers
+        application.add_handler(CommandHandler("start", start))
+        application.add_handler(CallbackQueryHandler(menu, pattern='^menu$'))
+        application.add_handler(CallbackQueryHandler(about_us, pattern='^about$'))
+        application.add_handler(CallbackQueryHandler(vip_channels, pattern='^vip$'))
+        application.add_handler(CallbackQueryHandler(payment_methods, pattern='^payment$'))
+        application.add_handler(CallbackQueryHandler(payment_proof, pattern='^proof$'))
+        application.add_handler(CallbackQueryHandler(social_media, pattern='^social$'))
+        application.add_handler(CallbackQueryHandler(talk_admin, pattern='^admin$'))
+        application.add_handler(CallbackQueryHandler(help_command, pattern='^help$'))
+        application.add_handler(MessageHandler(filters.PHOTO, handle_photo))
 
-    # Start polling
-    updater.start_polling()
-    print("Bot started successfully!")
-    
-    # Run the bot until you press Ctrl-C
-    updater.idle()
+        print("🤖 Bot starting...")
+        # Start bot
+        application.run_polling()
+        
+    except Exception as e:
+        print(f"❌ Error starting bot: {e}")
+        import traceback
+        traceback.print_exc()
 
 if __name__ == '__main__':
     main()
