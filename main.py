@@ -1,85 +1,260 @@
 import os
-import asyncio
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
+import logging
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 
-# --- BOT TOKEN Setup ---
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
-FALLBACK_TOKEN = "8483748301:AAGSC3jQ05PikEsKYnD6nvCt_BD_LV18-po"  # <-- अपने BotFather token डालो
+# Bot configuration - YE BADME CHANGE KARENGE
+BOT_TOKEN = os.environ.get('8483748301:AAEtNbx1_VKD5UqS6FzPhkzjkWrev1Sz66o')
 
-if not BOT_TOKEN:
-    print("⚠️ BOT_TOKEN not found in Environment, using fallback token.")
-    BOT_TOKEN = FALLBACK_TOKEN
+# Enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
 
-# --- Start Command ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
-        [InlineKeyboardButton("💎 VIP Channel List", callback_data="vip")],
-        [InlineKeyboardButton("💰 Payment Options", callback_data="payment")],
-        [InlineKeyboardButton("📸 Send Payment Proof", callback_data="proof")],
-        [InlineKeyboardButton("🧑‍💻 Talk with Admin", callback_data="admin")],
-        [InlineKeyboardButton("🌐 Social Media", callback_data="social")],
-        [InlineKeyboardButton("❓ Help", callback_data="help")]
+        [InlineKeyboardButton("📋 Menu", callback_data='menu')],
+        [InlineKeyboardButton("ℹ️ About Us", callback_data='about')],
+        [InlineKeyboardButton("💎 VIP Channels", callback_data='vip')],
+        [InlineKeyboardButton("💳 Payment Methods", callback_data='payment')],
+        [InlineKeyboardButton("📸 Send Payment Proof", callback_data='proof')],
+        [InlineKeyboardButton("📱 Social Media", callback_data='social')],
+        [InlineKeyboardButton("👨‍💼 Talk with Admin", callback_data='admin')],
+        [InlineKeyboardButton("❓ Help", callback_data='help')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text(
-        "👋 Welcome to *Fileprovider Official Network Bot!*\n\nSelect an option below:",
-        parse_mode="Markdown",
-        reply_markup=reply_markup
-    )
+    
+    welcome_text = """
+🤖 **Welcome to Our VIP Service Bot!**
 
-# --- Button Handlers ---
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+Choose an option from the menu below to get started.
+    """
+    await update.message.reply_text(welcome_text, reply_markup=reply_markup, parse_mode='Markdown')
+
+async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+    
+    keyboard = [
+        [InlineKeyboardButton("📋 Menu", callback_data='menu')],
+        [InlineKeyboardButton("ℹ️ About Us", callback_data='about')],
+        [InlineKeyboardButton("💎 VIP Channels", callback_data='vip')],
+        [InlineKeyboardButton("💳 Payment Methods", callback_data='payment')],
+        [InlineKeyboardButton("📸 Send Payment Proof", callback_data='proof')],
+        [InlineKeyboardButton("📱 Social Media", callback_data='social')],
+        [InlineKeyboardButton("👨‍💼 Talk with Admin", callback_data='admin')],
+        [InlineKeyboardButton("❓ Help", callback_data='help')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(
+        "🎯 **Main Menu**\n\nSelect an option:",
+        reply_markup=reply_markup,
+        parse_mode='Markdown'
+    )
 
-    if query.data == "vip":
-        keyboard = [[InlineKeyboardButton(f"Channel {i}", callback_data=f"ch{i}")] for i in range(1, 21)]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.edit_message_text("📜 *VIP Channel List:*\nSelect a channel below:", parse_mode="Markdown", reply_markup=reply_markup)
+async def about_us(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    
+    about_text = """
+🏢 **About Us**
 
-    elif query.data.startswith("ch"):
-        await query.edit_message_text(f"📢 *Channel Info for {query.data.replace('ch','Channel ')}*\nJoin link or details here...", parse_mode="Markdown")
+We provide premium content through VIP channels with:
+• Exclusive content
+• Daily updates
+• 24/7 support
+• Secure payments
 
-    elif query.data == "payment":
-        keyboard = [
-            [InlineKeyboardButton("UPI 1", callback_data="upi1")],
-            [InlineKeyboardButton("UPI 2", callback_data="upi2")],
-            [InlineKeyboardButton("Crypto", callback_data="crypto")],
-            [InlineKeyboardButton("PayPal", callback_data="paypal")],
-            [InlineKeyboardButton("Others", callback_data="otherpay")]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.edit_message_text("💰 *Choose Payment Method:*", parse_mode="Markdown", reply_markup=reply_markup)
+We've been serving customers since 2023 with 100% satisfaction rate.
+    """
+    keyboard = [[InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(about_text, reply_markup=reply_markup, parse_mode='Markdown')
 
-    elif query.data in ["upi1","upi2","crypto","paypal","otherpay"]:
-        await query.edit_message_text(f"🪙 Payment option selected: *{query.data.upper()}*\nSend amount to respective account.", parse_mode="Markdown")
+async def vip_channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    
+    vip_text = """
+💎 **VIP Channel List & Pricing**
 
-    elif query.data == "proof":
-        await query.edit_message_text("📸 *Send Payment Proof Instructions:*\nPlease send screenshot to admin on Telegram: @fpofficialadminbot", parse_mode="Markdown")
+📺 **Basic Package - $10/month**
+• Channel 1
+• Channel 2
+• Daily updates
 
-    elif query.data == "admin":
-        await query.edit_message_text("🧑‍💻 *Talk with Admin:*\nMessage our admin at 👉 @fpofficialadminbot", parse_mode="Markdown")
+📺 **Premium Package - $20/month**
+• All Basic channels
+• Channel 3
+• Channel 4
+• Priority support
 
-    elif query.data == "social":
-        keyboard = [
-            [InlineKeyboardButton("Telegram", url="https://t.me/fpofficialnetwork")],
-            [InlineKeyboardButton("Instagram", url="https://instagram.com/fpofficialnetwork")],
-            [InlineKeyboardButton("Facebook", url="https://facebook.com/fpofficialnetwork")]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.edit_message_text("🌐 *Follow us on Social Media:*", parse_mode="Markdown", reply_markup=reply_markup)
+📺 **Ultimate Package - $30/month**
+• All Premium channels
+• Channel 5
+• Channel 6
+• 24/7 support
+• Early access
 
-    elif query.data == "help":
-        await query.edit_message_text("❓ *Help / FAQ:*\n1️⃣ Join VIP channel → Make payment\n2️⃣ Send proof → Wait for confirmation\n3️⃣ Need help? Contact admin.", parse_mode="Markdown")
+💫 **Special Offer: 3 months - 20% discount!**
+    """
+    keyboard = [
+        [InlineKeyboardButton("💳 Make Payment", callback_data='payment')],
+        [InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(vip_text, reply_markup=reply_markup, parse_mode='Markdown')
 
-# --- Main Function ---
-async def main():
-    app = Application.builder().token(BOT_TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(button))
-    print("✅ Bot is running...")
-    await app.run_polling()
+async def payment_methods(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    
+    payment_text = """
+💳 **Payment Methods**
 
-if __name__ == "__main__":
-    asyncio.run(main())
+We accept following payment methods:
+
+• **PayPal** - send to: paypal@example.com
+• **Cryptocurrency** 
+  BTC: 1ABC123...
+  ETH: 0x123...
+• **Bank Transfer**
+  Account details available on request
+
+After payment, please send screenshot as proof.
+    """
+    keyboard = [
+        [InlineKeyboardButton("📸 Send Payment Proof", callback_data='proof')],
+        [InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(payment_text, reply_markup=reply_markup, parse_mode='Markdown')
+
+async def payment_proof(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    
+    proof_text = """
+📸 **Send Payment Proof**
+
+Please send your payment screenshot/receipt here.
+
+**Instructions:**
+1. Take clear screenshot of payment confirmation
+2. Send it as photo/document
+3. Include your username in message
+4. We'll verify within 24 hours
+
+After verification, you'll be added to VIP channels.
+    """
+    keyboard = [[InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(proof_text, reply_markup=reply_markup, parse_mode='Markdown')
+
+async def social_media(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    
+    social_text = """
+📱 **Follow Us on Social Media**
+
+Stay updated with our latest news and offers:
+
+• **Twitter**: [@OurService](https://twitter.com/OurService)
+• **Instagram**: [@OurService](https://instagram.com/OurService)
+• **Telegram Channel**: [@OurChannel](https://t.me/OurChannel)
+
+Follow us for updates and announcements!
+    """
+    keyboard = [[InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(social_text, reply_markup=reply_markup, parse_mode='Markdown')
+
+async def talk_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    
+    admin_text = """
+👨‍💼 **Talk with Admin**
+
+You can contact our admin directly:
+
+📧 **Email**: admin@example.com
+👤 **Telegram**: @AdminUsername
+
+**Office Hours:**
+Monday-Friday: 9AM-6PM
+Saturday: 10AM-2PM
+
+We typically respond within 2-4 hours.
+    """
+    keyboard = [[InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(admin_text, reply_markup=reply_markup, parse_mode='Markdown')
+
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    
+    help_text = """
+❓ **Help Center**
+
+**Common Issues:**
+
+🔹 **Payment not verified?**
+Wait 24 hours, then contact admin
+
+🔹 **Can't access channel?**
+Check if subscription is active
+
+🔹 **Payment method not working?**
+Try alternative method
+
+For immediate assistance, contact @AdminUsername
+    """
+    keyboard = [
+        [InlineKeyboardButton("👨‍💼 Contact Admin", callback_data='admin')],
+        [InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(help_text, reply_markup=reply_markup, parse_mode='Markdown')
+
+async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle payment proof photos"""
+    user = update.message.from_user
+    
+    await update.message.reply_text(
+        "✅ Thank you! We've received your payment proof. We'll verify it within 24 hours.",
+        parse_mode='Markdown'
+    )
+
+def main():
+    # Create application
+    application = Application.builder().token(BOT_TOKEN).build()
+
+    # Add handlers
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CallbackQueryHandler(menu, pattern='^menu$'))
+    application.add_handler(CallbackQueryHandler(about_us, pattern='^about$'))
+    application.add_handler(CallbackQueryHandler(vip_channels, pattern='^vip$'))
+    application.add_handler(CallbackQueryHandler(payment_methods, pattern='^payment$'))
+    application.add_handler(CallbackQueryHandler(payment_proof, pattern='^proof$'))
+    application.add_handler(CallbackQueryHandler(social_media, pattern='^social$'))
+    application.add_handler(CallbackQueryHandler(talk_admin, pattern='^admin$'))
+    application.add_handler(CallbackQueryHandler(help_command, pattern='^help$'))
+    application.add_handler(MessageHandler(filters.PHOTO, handle_photo))
+
+    # Start bot
+    application.run_polling()
+
+if __name__ == '__main__':
+    main()
