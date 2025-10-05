@@ -2,7 +2,11 @@ import os
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
-BOT_TOKEN = os.getenv("8483748301:AAGSC3jQ05PikEsKYnD6nvCt_BD_LV18-po")
+# --- Bot Token from Render Environment Variable ---
+BOT_TOKEN = os.environ.get("8483748301:AAGSC3jQ05PikEsKYnD6nvCt_BD_LV18-po")
+
+if not BOT_TOKEN:
+    raise ValueError("❌ BOT_TOKEN not found! Set it in Render Environment Variables.")
 
 # --- Start Command ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
