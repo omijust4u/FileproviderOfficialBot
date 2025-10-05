@@ -2,11 +2,16 @@ import os
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
-# --- Bot Token from Render Environment Variable ---
-BOT_TOKEN = os.environ.get("8483748301:AAGSC3jQ05PikEsKYnD6nvCt_BD_LV18-po")
+# --- BOT TOKEN Setup ---
+# First try from Render Environment Variable
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+
+# Fallback token (direct hardcoded) — replace with your BotFather token
+FALLBACK_TOKEN = "8483748301:AAGSC3jQ05PikEsKYnD6nvCt_BD_LV18-po"
 
 if not BOT_TOKEN:
-    raise ValueError("❌ BOT_TOKEN not found! Set it in Render Environment Variables.")
+    print("⚠️ BOT_TOKEN not found in Environment, using fallback token.")
+    BOT_TOKEN = FALLBACK_TOKEN
 
 # --- Start Command ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
