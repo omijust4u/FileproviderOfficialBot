@@ -3,8 +3,8 @@ import logging
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 
-# Bot token
-BOT_TOKEN = os.environ.get('BOT_TOKEN')
+# Bot token - ye aapko set karna hoga
+BOT_TOKEN = "8483748301:AAEtNbx1_VKD5UqS6FzPhkzjkWrev1Sz66o"
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -23,8 +23,12 @@ def start(update, context):
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    welcome_text = "🤖 Welcome to VIP Service Bot!\n\nChoose an option:"
-    update.message.reply_text(welcome_text, reply_markup=reply_markup)
+    welcome_text = """
+🤖 **Welcome to VIP Service Bot!**
+
+Choose an option from the menu below to get started.
+    """
+    update.message.reply_text(welcome_text, reply_markup=reply_markup, parse_mode='Markdown')
 
 def handle_menu(update, context):
     query = update.callback_query
@@ -44,113 +48,144 @@ def handle_menu(update, context):
             [InlineKeyboardButton("❓ Help", callback_data='help')]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        query.edit_message_text("🎯 Main Menu - Select option:", reply_markup=reply_markup)
+        query.edit_message_text("🎯 **Main Menu**\n\nSelect an option:", reply_markup=reply_markup, parse_mode='Markdown')
     
     elif data == 'about':
-        text = """🏢 About Us
+        text = """🏢 **About Us**
 
 We provide premium VIP channels with:
 • Exclusive content
 • Daily updates  
 • 24/7 support
-• Secure payments"""
-        keyboard = [[InlineKeyboardButton("🔙 Back", callback_data='menu')]]
+• Secure payments
+
+100% customer satisfaction!"""
+        keyboard = [[InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        query.edit_message_text(text, reply_markup=reply_markup)
+        query.edit_message_text(text, reply_markup=reply_markup, parse_mode='Markdown')
     
     elif data == 'vip':
-        text = """💎 VIP Channels & Pricing
+        text = """💎 **VIP Channel List & Pricing**
 
-Basic - $10/month
-• Channel 1, 2
+📺 **Basic Package - $10/month**
+• Channel 1
+• Channel 2
 • Daily updates
 
-Premium - $20/month  
-• All Basic + Channel 3,4
+📺 **Premium Package - $20/month**  
+• All Basic channels
+• Channel 3
+• Channel 4
 • Priority support
 
-Ultimate - $30/month
-• All Premium + Channel 5,6
-• 24/7 support"""
+📺 **Ultimate Package - $30/month**
+• All Premium channels  
+• Channel 5
+• Channel 6
+• 24/7 support
+
+💫 **Special Offer: 3 months - 20% discount!**"""
         keyboard = [
-            [InlineKeyboardButton("💳 Payment", callback_data='payment')],
-            [InlineKeyboardButton("🔙 Back", callback_data='menu')]
+            [InlineKeyboardButton("💳 Make Payment", callback_data='payment')],
+            [InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        query.edit_message_text(text, reply_markup=reply_markup)
+        query.edit_message_text(text, reply_markup=reply_markup, parse_mode='Markdown')
     
     elif data == 'payment':
-        text = """💳 Payment Methods
+        text = """💳 **Payment Methods**
 
-We accept:
-• PayPal: paypal@example.com
-• Crypto: BTC, ETH, USDT
-• Bank Transfer
+We accept following payment methods:
 
-Payment proof admin ko bhejein."""
+• **PayPal** - send to: paypal@example.com
+• **Cryptocurrency** 
+  BTC: 1ABC123...
+  ETH: 0x123...
+• **Bank Transfer**
+  Account details available on request
+
+After payment, please send screenshot as proof."""
         keyboard = [
-            [InlineKeyboardButton("👨‍💼 Admin", callback_data='admin')],
-            [InlineKeyboardButton("🔙 Back", callback_data='menu')]
+            [InlineKeyboardButton("📸 Send Payment Proof", callback_data='proof')],
+            [InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        query.edit_message_text(text, reply_markup=reply_markup)
+        query.edit_message_text(text, reply_markup=reply_markup, parse_mode='Markdown')
     
     elif data == 'proof':
-        text = """📸 Payment Proof
+        text = """📸 **Send Payment Proof**
 
-Payment proof bhejne ke liye:
-1. Screenshot lein
-2. Admin ko bhejein
-3. 24 hours mein verify"""
+Please send your payment screenshot/receipt here.
+
+**Instructions:**
+1. Take clear screenshot of payment confirmation
+2. Send it as photo/document
+3. Include your username in message
+4. We'll verify within 24 hours
+
+After verification, you'll be added to VIP channels."""
         keyboard = [
-            [InlineKeyboardButton("👨‍💼 Admin", callback_data='admin')],
-            [InlineKeyboardButton("🔙 Back", callback_data='menu')]
+            [InlineKeyboardButton("👨‍💼 Contact Admin", callback_data='admin')],
+            [InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        query.edit_message_text(text, reply_markup=reply_markup)
+        query.edit_message_text(text, reply_markup=reply_markup, parse_mode='Markdown')
     
     elif data == 'social':
-        text = """📱 Social Media
+        text = """📱 **Follow Us on Social Media**
 
-• Twitter: @OurService
-• Instagram: @OurService  
-• Telegram: @OurChannel
+Stay updated with our latest news and offers:
 
-Follow for updates!"""
-        keyboard = [[InlineKeyboardButton("🔙 Back", callback_data='menu')]]
+• **Twitter**: [@OurService](https://twitter.com/OurService)
+• **Instagram**: [@OurService](https://instagram.com/OurService)
+• **Telegram Channel**: [@OurChannel](https://t.me/OurChannel)
+
+Follow us for updates and announcements!"""
+        keyboard = [[InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        query.edit_message_text(text, reply_markup=reply_markup)
+        query.edit_message_text(text, reply_markup=reply_markup, parse_mode='Markdown')
     
     elif data == 'admin':
-        text = """👨‍💼 Contact Admin
+        text = """👨‍💼 **Talk with Admin**
 
-Admin se contact:
-📧 Email: admin@example.com
-👤 Telegram: @AdminUsername
+You can contact our admin directly:
 
-Response: 2-4 hours"""
-        keyboard = [[InlineKeyboardButton("🔙 Back", callback_data='menu')]]
+📧 **Email**: admin@example.com
+👤 **Telegram**: @AdminUsername
+
+**Office Hours:**
+Monday-Friday: 9AM-6PM
+Saturday: 10AM-2PM
+
+We typically respond within 2-4 hours."""
+        keyboard = [[InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        query.edit_message_text(text, reply_markup=reply_markup)
+        query.edit_message_text(text, reply_markup=reply_markup, parse_mode='Markdown')
     
     elif data == 'help':
-        text = """❓ Help Center
+        text = """❓ **Help Center**
 
-Common Issues:
-• Payment verify? - Wait 24 hours
-• Channel access? - Check subscription
-• Payment issue? - Try alternative
+**Common Issues:**
 
-Contact: @AdminUsername"""
+🔹 **Payment not verified?**
+Wait 24 hours, then contact admin
+
+🔹 **Can't access channel?**
+Check if subscription is active
+
+🔹 **Payment method not working?**
+Try alternative method
+
+For immediate assistance, contact @AdminUsername"""
         keyboard = [
-            [InlineKeyboardButton("👨‍💼 Admin", callback_data='admin')],
-            [InlineKeyboardButton("🔙 Back", callback_data='menu')]
+            [InlineKeyboardButton("👨‍💼 Contact Admin", callback_data='admin')],
+            [InlineKeyboardButton("🔙 Back to Menu", callback_data='menu')]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        query.edit_message_text(text, reply_markup=reply_markup)
+        query.edit_message_text(text, reply_markup=reply_markup, parse_mode='Markdown')
 
 def main():
-    print("🚀 Starting Bot...")
+    print("🚀 Starting Telegram Bot...")
     
     try:
         updater = Updater(BOT_TOKEN)
@@ -160,6 +195,7 @@ def main():
         dp.add_handler(CallbackQueryHandler(handle_menu))
         
         print("✅ Bot Started Successfully!")
+        print("🤖 Bot is now running...")
         updater.start_polling()
         updater.idle()
         
